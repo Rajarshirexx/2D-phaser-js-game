@@ -1,5 +1,5 @@
 Phaser Game
-A fun 2D platformer game built with Phaser and React.
+A fun 2D platform game built with Phaser and React + Vite.
 
 Description :
 
@@ -18,7 +18,7 @@ Installation
 
 Clone the repository:
 Copy code -
-git clone https://github.com/your-username/phaser-game.git
+git clone https://github.com/Rajarshirexx/2D-phaser-js-game.git
 cd client
 npm install
 npm install phaser
@@ -27,7 +27,7 @@ Run the development server:
 
 Copy code
 npm run dev
-Open your browser and go to http://localhost:3000 to play the game.
+Open your browser and go to http://localhost:5173 to play the game.
 
 How to Play
 Use the arrow keys to move the player:
@@ -43,6 +43,6 @@ Phaser: A fast and free open-source HTML5 game framework used to create the game
 React: Used to integrate the Phaser game into a React-based web application.
 
 License
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License.
 
 
