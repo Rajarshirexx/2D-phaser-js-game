@@ -148,6 +148,15 @@ const PhaserGame = () => {
           })
           .setOrigin(0.5)
           .setVisible(false);
+
+        // "Game Over" Text (Initially Hidden)
+        this.gameOverText = this.add
+          .text(400, 300, "Game Over!", {
+            fontSize: "64px",
+            fill: "#ff0000",
+          })
+          .setOrigin(0.5)
+          .setVisible(false);
       }
 
       collectStar(player, star) {
@@ -163,10 +172,11 @@ const PhaserGame = () => {
       }
 
       hitBomb(player, bomb) {
-        // Stop the game, turn the player red and show game over
+        // Stop the game, turn the player red, and show "Game Over"
         this.physics.pause();
         player.setTint(0xff0000);
         player.anims.play("turn");
+        this.gameOverText.setVisible(true); // Show "Game Over" text
       }
 
       update() {
