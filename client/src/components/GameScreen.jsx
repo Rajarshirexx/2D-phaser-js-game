@@ -142,7 +142,7 @@ const PhaserGame = () => {
 
         // "Well Done" Text (Initially Hidden)
         this.wellDoneText = this.add
-          .text(400, 300, "Well Done!", {
+          .text(400, 300, "Well Done Player!", {
             fontSize: "64px",
             fill: "#00ff00",
           })
