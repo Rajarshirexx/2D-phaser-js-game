@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import Phaser from "phaser";
+import bomb from "../assets/bomb.png";
 
 const PhaserGame = () => {
   const gameRef = useRef(null);
@@ -19,6 +20,7 @@ const PhaserGame = () => {
           "star",
           "https://labs.phaser.io/assets/sprites/star.png"
         );
+        this.load.image("bomb", bomb);
         this.load.spritesheet(
           "player",
           "https://labs.phaser.io/assets/sprites/dude.png",
@@ -45,7 +47,7 @@ const PhaserGame = () => {
         this.player.setBounce(0.2);
         this.player.setCollideWorldBounds(true);
         this.physics.add.collider(this.player, platforms);
-        this.player.setGravityY(300)
+        this.player.setGravityY(300);
 
         // Animations
         this.anims.create({
@@ -74,43 +76,61 @@ const PhaserGame = () => {
 
         // Stars Group (Dynamic) with Manual Positioning
         const starPositions = [
-          {x: 100, y: 100},
-          {x: 200, y: 150},
-          {x: 70, y: 170},
-
-          {x: 600, y: 100},
-          {x: 650, y: 160},
-          {x: 750, y: 60},
-
-          {x: 600 ,y: 320},
-          {x: 700 ,y: 275},
-          {x: 770 ,y: 350},
-
+          { x: 100, y: 100 },
+          { x: 200, y: 150 },
+          { x: 70, y: 170 },
+          { x: 600, y: 100 },
+          { x: 650, y: 160 },
+          { x: 750, y: 60 },
+          { x: 600, y: 320 },
+          { x: 700, y: 275 },
+          { x: 770, y: 350 },
         ];
 
-        const stars = this.physics.add.group();
+        this.stars = this.physics.add.group();
 
         starPositions.forEach((pos) => {
-          const star = stars.create(pos.x, pos.y, "star");
+          const star = this.stars.create(pos.x, pos.y, "star");
           star.setScale(0.3); // Make the stars smaller (50% scale)
           star.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8)); // Random bounce between 0.4 and 0.8
         });
 
-        function collectStar(player, star) {
-          star.disableBody(true, true);
-        }
+        // Manual Bomb Positions
+        const bombPositions = [
+          { x: 200, y: 300 },
+          { x: 200, y: 120 },
+          { x: 700, y: 120 },
+        ];
+
+        this.bombs = this.physics.add.group();
+
+        bombPositions.forEach((pos) => {
+          const bomb = this.bombs.create(pos.x, pos.y, "bomb");
+          bomb.setScale(0.8); // Set the size of bombs
+          bomb.setBounce(1); // Allow bouncing
+          bomb.setCollideWorldBounds(true); // Make bombs collide with the world boundaries
+          bomb.setVelocity(Phaser.Math.Between(100, -100), 50); // Set random velocity for movement
+        });
 
         // Collisions
-        this.physics.add.collider(stars, platforms);
-        this.physics.add.overlap(
+        this.physics.add.collider(this.stars, platforms);
+        this.physics.add.collider(
           this.player,
-          stars,
+          this.stars,
           this.collectStar,
           null,
           this
         );
+        this.physics.add.collider(this.bombs, platforms);
+        this.physics.add.collider(
+          this.player,
+          this.bombs,
+          this.hitBomb,
+          null,
+          this
+        );
 
-        // Cursors
+        // Cursors for Player Movement
         this.cursors = this.input.keyboard.createCursorKeys();
 
         // Score Text
@@ -119,12 +139,34 @@ const PhaserGame = () => {
           fontSize: "32px",
           fill: "#fff",
         });
+
+        // "Well Done" Text (Initially Hidden)
+        this.wellDoneText = this.add
+          .text(400, 300, "Well Done!", {
+            fontSize: "64px",
+            fill: "#00ff00",
+          })
+          .setOrigin(0.5)
+          .setVisible(false);
       }
 
       collectStar(player, star) {
         star.disableBody(true, true); // Remove the star
         this.score += 10;
         this.scoreText.setText(`Score: ${this.score}`);
+
+        // Check if all stars are collected
+        if (this.stars.countActive(true) === 0) {
+          this.wellDoneText.setVisible(true); // Show "Well Done" text
+          this.physics.pause(); // Stop the game
+        }
+      }
+
+      hitBomb(player, bomb) {
+        // Stop the game, turn the player red and show game over
+        this.physics.pause();
+        player.setTint(0xff0000);
+        player.anims.play("turn");
       }
 
       update() {
